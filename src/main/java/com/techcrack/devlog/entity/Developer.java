@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,10 +30,10 @@ public class Developer {
 	
 	private LocalDate dob;
 	
-	@OneToMany(mappedBy="dev")
+	@OneToMany(mappedBy="dev", cascade=CascadeType.ALL)
 	private List<Project> projects;
 	
-	@OneToMany(mappedBy="dev")
+	@OneToMany(mappedBy="dev", cascade=CascadeType.ALL)
 	private List<Log> logs;
 	
 	public Developer() {

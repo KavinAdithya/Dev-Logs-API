@@ -23,6 +23,8 @@ public class Log {
 	
 	private LocalDate date;
 	
+	private String description;
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JsonBackReference
 	private Developer dev;
@@ -31,9 +33,8 @@ public class Log {
 		super();
 	}
 
-	public Log(Integer id, String title, LocalDate date) {
+	public Log(String title, String description, LocalDate date) {
 		super();
-		this.id = id;
 		this.title = title;
 		this.date = date;
 	}
@@ -70,9 +71,17 @@ public class Log {
 		this.dev = dev;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(date, id, title);
+		return Objects.hash(date, description, dev, title);
 	}
 
 	@Override
@@ -84,11 +93,13 @@ public class Log {
 		if (getClass() != obj.getClass())
 			return false;
 		Log other = (Log) obj;
-		return Objects.equals(date, other.date) && Objects.equals(id, other.id) && Objects.equals(title, other.title);
+		return Objects.equals(date, other.date) && Objects.equals(description, other.description)
+				&& Objects.equals(dev, other.dev) && Objects.equals(title, other.title);
 	}
 
 	@Override
 	public String toString() {
-		return "Log [id=" + id + ", title=" + title + ", date=" + date + "]";
+		return "Log [id=" + id + ", title=" + title + ", date=" + date + ", description=" + description + ", dev=" + dev
+				+ "]";
 	}
 }
