@@ -1,8 +1,12 @@
 package com.techcrack.devlog;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.techcrack.devlog.entity.Developer;
+import com.techcrack.devlog.entity.Log;
+import com.techcrack.devlog.entity.Project;
 
 @Service
 public class DeveloperService {
@@ -27,6 +31,16 @@ public class DeveloperService {
 		if (dev.getSkills() != null) {
 			sDev.getSkills().clear();
 			sDev.getSkills().addAll(dev.getSkills());
+		}
+	}
+	
+	public void fillDev(Developer dev, List<Project> projects, List<Log> logs) {
+		for (Project p : projects) {
+			p.setDev(dev);
+		}
+		
+		for (Log l : logs) {
+			l.setDev(dev);
 		}
 	}
 }
