@@ -1,6 +1,7 @@
 package com.techcrack.devlog.control;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.techcrack.devlog.DeveloperService;
 import com.techcrack.devlog.entity.Developer;
 import com.techcrack.devlog.exception.DeveloperNotFoundException;
+import com.techcrack.devlog.exception.ErrorDetail;
 import com.techcrack.devlog.repos.DeveloperRepository;
 
 @RestController
@@ -37,6 +40,7 @@ public class DevController {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@GetMapping("dev/{id}")
+	@ResponseStatus(HttpStatus.FOUND)
 	public Developer getDeveloperById(@PathVariable Integer id) {
 		var op = devRepo.findById(id);
 		
@@ -49,7 +53,7 @@ public class DevController {
 	
 	@PutMapping("dev/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateData(@PathVariable Integer id, @RequestBody Developer dev)  {
+	public ResponseEntity<Object> updateData(@PathVariable Integer id, @RequestBody Developer dev)  {
 		Optional<Developer> sDev = devRepo.findById(id);
 		
 		if (sDev.isEmpty()) {
@@ -59,6 +63,8 @@ public class DevController {
 		devSer.updatePartialData(sDev.get(), dev);
 		
 		devRepo.save(sDev.get());
+		
+		return ResponseEntity.ok(devSer.buildLocation(sDev.get().getId()));
 	}
 	
 	@PostMapping("/dev")
@@ -70,13 +76,7 @@ public class DevController {
 		
 		Developer sDev = devRepo.save(dev);
 		
-		URI location = ServletUriComponentsBuilder
-						.fromCurrentRequest()
-						.path("/{id}")
-						.buildAndExpand(sDev.getId())
-						.toUri();
-		
-		return ResponseEntity.created(location).build();
+		return ResponseEntity.created(devSer.buildLocation(sDev.getId())).build();
 	}
 	
 	@GetMapping("/dev")
@@ -85,6 +85,11 @@ public class DevController {
 		return devRepo.getDevelopersBySkill(skill);
 	}
 	
-//	@ExceptionHandler(Develop)
-//	public 
+	// Controller Exception Handler
+	@ExceptionHandler(DeveloperNotFoundException.class)
+	public ResponseEntity<ErrorDetail> handleError(Exception e) {
+		ErrorDetail error = new ErrorDetail(e.getMessage(), LocalDateTime.now());
+		
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	}
 }

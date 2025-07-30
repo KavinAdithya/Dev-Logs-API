@@ -1,8 +1,10 @@
 package com.techcrack.devlog;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.techcrack.devlog.entity.Developer;
 import com.techcrack.devlog.entity.Log;
@@ -42,5 +44,13 @@ public class DeveloperService {
 		for (Log l : logs) {
 			l.setDev(dev);
 		}
+	}
+	
+	public URI buildLocation(int id) {
+		return ServletUriComponentsBuilder
+				.fromCurrentRequest()
+				.path("/{id}")
+				.buildAndExpand(id)
+				.toUri();
 	}
 }
